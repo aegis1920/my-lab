@@ -1,13 +1,14 @@
 package springbook.user;
 
 import java.sql.SQLException;
+import springbook.user.dao.NConnectionMaker;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 
-public class Main {
+public class UserDaoTest {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDao userDao = new UserDao();
+        UserDao userDao = new UserDao(new NConnectionMaker());
         User user = new User();
         user.setId("hello");
         user.setName("빙봉");
