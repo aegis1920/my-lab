@@ -15,7 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 public class JunitTest {
 
     @Autowired
-    ApplicationContext context;
+    private ApplicationContext context;
 
     private static final Set<JunitTest> testObjects = new HashSet<>();
 
