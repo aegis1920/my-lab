@@ -16,7 +16,6 @@ dependencies {
     implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.13'
     implementation group: 'org.springframework', name: 'spring-context', version: '5.2.8.RELEASE'
-    implementation group: 'org.springframework', name: 'spring-asm', version: '5.2.8.RELEASE'
     implementation group: 'org.springframework', name: 'spring-expression', version: '5.2.8.RELEASE'
     implementation group: 'org.springframework', name: 'spring-jdbc', version: '3.0.7.RELEASE'
     implementation group: 'cglib', name: 'cglib', version: '2.2.2'
