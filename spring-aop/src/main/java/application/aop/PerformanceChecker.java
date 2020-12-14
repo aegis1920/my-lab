@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PerformanceChecker {
 
-    @Around("execution(* application.aop.SomeClazz.someMethod())")
+    @Around("execution(* application.aop.SomeClazzForSpringAop.someMethod())")
     public Object calculatePerformanceTime(ProceedingJoinPoint proceedingJoinPoint) {
         Object result = null;
         try {
