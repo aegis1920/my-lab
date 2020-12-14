@@ -4,11 +4,14 @@ package jpa;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import domain.Member;
 import domain.MemberWithVersion;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.Persistence;
+import javax.persistence.PessimisticLockException;
 import javax.persistence.RollbackException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,12 +30,13 @@ public class TransactionTest {
         entityManager.getTransaction().begin();
 
         entityManager.persist(new MemberWithVersion("bingbong", 3L));
+        entityManager.persist(new Member("bingbong", 3L));
 
         entityManager.getTransaction().commit();
         entityManager.close();
     }
 
-    @DisplayName("Optimistic Locking - 동시에 조회 및 수정했을 때")
+    @DisplayName("Optimistic Locking - 버전이 서로 다를 때")
     @Test
     void optimisticLock_UpdateSameTime_ThrownException() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -44,9 +48,20 @@ public class TransactionTest {
         MemberWithVersion member = entityManager.find(MemberWithVersion.class, 1L);
         MemberWithVersion member2 = entityManager2.find(MemberWithVersion.class, 1L);
 
+        /*
+        update
+            MemberWithVersion
+        set
+            age=?,
+            name=?,
+            version=?
+        where
+            id=?
+            and version=?
+        */
         member.setName("hello");
 
-        // 첫 번째 트랜잭션은 정상적으로 진행. member의 버전은 1
+        // 첫 번째 트랜잭션은 정상적으로 진행. member의 버전은 1. 위처럼 update할 때 버전을 증가시켜준다.
         entityManager.getTransaction().commit();
         entityManager.close();
 
@@ -60,6 +75,46 @@ public class TransactionTest {
             .getCause()
             .isInstanceOf(OptimisticLockException.class);
 
+        entityManager2.close();
+    }
+
+    @DisplayName("Pessimistic Locking - 락이 걸린 엔티티를 수정할 때")
+    @Test
+    void pessimisticLock_UpdateSameTime_ThrownException() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManager entityManager2 = entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+        entityManager2.getTransaction().begin();
+
+        /*
+        select
+        member0_.id as id1_0_0_,
+            member0_.age as age2_0_0_,
+        member0_.name as name3_0_0_
+            from
+        Member member0_
+        where
+        member0_.id=? for update
+        */
+
+        // 위처럼 for update를 붙여서 가져오기 때문에 Lock이 걸린다.
+        entityManager.find(Member.class, 1L, LockModeType.PESSIMISTIC_WRITE);
+        Member member2 = entityManager2.find(Member.class, 1L);
+
+        // 이렇게 조회하는 건 상관없지만
+        assertThat(member2.getName()).isEqualTo("bingbong");
+
+        member2.setName("hello");
+
+        // 수정하고 먼저 DB에 업데이트하려 할 때 PessimisticLockException이 일어난다.
+        assertThatThrownBy(() -> entityManager2.getTransaction().commit())
+            .isInstanceOf(RollbackException.class)
+            .getCause()
+            .isInstanceOf(PessimisticLockException.class);
+
+        entityManager.getTransaction().commit();
+
+        entityManager.close();
         entityManager2.close();
     }
 }
