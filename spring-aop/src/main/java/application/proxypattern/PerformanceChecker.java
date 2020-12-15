@@ -2,7 +2,7 @@ package application.proxypattern;
 
 import application.domain.Member;
 
-public class MemberServiceImplProxy implements MemberService {
+public class PerformanceChecker implements MemberService {
 
     MemberService memberService = new MemberServiceImpl();
 

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class MemberServiceImplProxyTest {
+public class PerformanceCheckerTest {
 
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
@@ -27,7 +27,7 @@ public class MemberServiceImplProxyTest {
     @DisplayName("프록시 패턴을 이용한 수행 시간 출력")
     @Test
     void create() {
-        MemberService memberService = new MemberServiceImplProxy();
+        MemberService memberService = new PerformanceChecker();
 
         assertThat(memberService.create("bingbong").getName()).isEqualTo("bingbong");
         assertThat(outputStreamCaptor.toString()).contains("수행 시간");

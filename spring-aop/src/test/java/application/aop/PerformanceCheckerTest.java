@@ -12,7 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-@SpringBootTest(classes = {MemberService.class, PerformanceChecker.class})
+@SpringBootTest(classes = {MemberServiceForJdkDynamic.class, MemberServiceImplForJdkDynamic.class,
+    MemberServiceForCglib.class, PerformanceChecker.class})
 @EnableAspectJAutoProxy // 오토프록시
 public class PerformanceCheckerTest {
 
@@ -30,12 +31,27 @@ public class PerformanceCheckerTest {
     }
 
     @Autowired
-    private MemberService memberService;
+    private MemberServiceForCglib memberServiceForCglib;
+
+    @Autowired
+    private MemberServiceForJdkDynamic memberServiceForJdkDynamic;
 
     @DisplayName("Spring AOP를 이용한 수행 시간 출력")
     @Test
     void calculatePerformanceTime() {
-        assertThat(memberService.create("bingbong").getName()).isEqualTo("bingbong");
+        assertThat(memberServiceForCglib.create("bingbong").getName()).isEqualTo("bingbong");
         assertThat(outputStreamCaptor.toString()).contains("수행 시간");
+    }
+
+    @DisplayName("Spring AOP가 JDK Dynamic Proxy 방식 선택 - 인터페이스 유")
+    @Test
+    void chooseJdkDynamic() {
+        assertThat(memberServiceForJdkDynamic.getClass().toString()).contains("Proxy");
+    }
+
+    @DisplayName("Spring AOP가 CGLIB Proxy 방식 선택 - 인터페이스 무")
+    @Test
+    void chooseCGLIB() {
+        assertThat(memberServiceForCglib.getClass().toString()).contains("CGLIB");
     }
 }
