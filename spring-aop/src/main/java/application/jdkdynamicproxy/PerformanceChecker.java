@@ -3,11 +3,12 @@ package application.jdkdynamicproxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-public class JdkDynamicProxyHandler implements InvocationHandler {
+// JDK Dynamic Proxy를 이용한 방법
+public class PerformanceChecker implements InvocationHandler {
 
     private final Object target;
 
-    public JdkDynamicProxyHandler(Object target) {
+    public PerformanceChecker(Object target) {
         this.target = target;
     }
 
