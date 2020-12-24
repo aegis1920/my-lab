@@ -1,6 +1,7 @@
 package things.regex;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,8 +10,26 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-public class RegexTest {
+class RegexTest {
+
+    @DisplayName("정규표현식을 사용하지 않은 도메인")
+    @ParameterizedTest
+    @ValueSource(strings = {"011-1234-1234", "010-12345-123", "ㅎ"})
+    void regexTest_WithoutRegex(String input) {
+        assertThatThrownBy(() -> new PhoneNumberWithoutRegex(input))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("정규표현식을 사용한 도메인")
+    @ParameterizedTest
+    @ValueSource(strings = {"011-1234-1234", "010-12345-123", "ㅎ"})
+    void regexTest_WithRegex(String input) {
+        assertThatThrownBy(() -> new PhoneNumberWithRegex(input))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
 
     @DisplayName("하나의 Matcher를 사용한 정규표현식")
     @Test
