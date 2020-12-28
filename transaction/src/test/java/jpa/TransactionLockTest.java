@@ -4,8 +4,8 @@ package jpa;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import domain.Member;
-import domain.MemberWithVersion;
+import application.domain.Person;
+import application.domain.PersonWithVersion;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class TransactionTest {
+public class TransactionLockTest {
 
     // 설정정보를 가져옴. 항상 테이블을 Create하는 속성 있음
     private final EntityManagerFactory entityManagerFactory = Persistence
@@ -29,8 +29,8 @@ public class TransactionTest {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        entityManager.persist(new MemberWithVersion("bingbong", 3L));
-        entityManager.persist(new Member("bingbong", 3L));
+        entityManager.persist(new PersonWithVersion("bingbong", 3L));
+        entityManager.persist(new Person("bingbong", 3L));
 
         entityManager.getTransaction().commit();
         entityManager.close();
@@ -45,12 +45,12 @@ public class TransactionTest {
         entityManager2.getTransaction().begin();
 
         // 동시에 조회했으므로 이때 버전은 둘다 0
-        MemberWithVersion member = entityManager.find(MemberWithVersion.class, 1L);
-        MemberWithVersion member2 = entityManager2.find(MemberWithVersion.class, 1L);
+        PersonWithVersion Person = entityManager.find(PersonWithVersion.class, 1L);
+        PersonWithVersion member2 = entityManager2.find(PersonWithVersion.class, 1L);
 
         /*
         update
-            MemberWithVersion
+            PersonWithVersion
         set
             age=?,
             name=?,
@@ -59,13 +59,13 @@ public class TransactionTest {
             id=?
             and version=?
         */
-        member.setName("hello");
+        Person.setName("hello");
 
         // 첫 번째 트랜잭션은 정상적으로 진행. member의 버전은 1. 위처럼 update할 때 버전을 증가시켜준다.
         entityManager.getTransaction().commit();
         entityManager.close();
 
-        assertThat(member.getVersion()).isEqualTo(1);
+        assertThat(Person.getVersion()).isEqualTo(1);
 
         member2.setName("world");
 
@@ -92,14 +92,14 @@ public class TransactionTest {
             member0_.age as age2_0_0_,
         member0_.name as name3_0_0_
             from
-        Member member0_
+        Person member0_
         where
         member0_.id=? for update
         */
 
         // 위처럼 for update를 붙여서 가져오기 때문에 Lock이 걸린다.
-        entityManager.find(Member.class, 1L, LockModeType.PESSIMISTIC_WRITE);
-        Member member2 = entityManager2.find(Member.class, 1L);
+        entityManager.find(Person.class, 1L, LockModeType.PESSIMISTIC_WRITE);
+        Person member2 = entityManager2.find(Person.class, 1L);
 
         // 이렇게 조회하는 건 상관없지만
         assertThat(member2.getName()).isEqualTo("bingbong");

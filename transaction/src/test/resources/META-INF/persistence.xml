@@ -4,8 +4,8 @@
   version="2.1">
   <persistence-unit name="jpa-practice">
 <!--  사용하려는 클래스를 작성해줘야 함  -->
-    <class>domain.MemberWithVersion</class>
-    <class>domain.Member</class>
+    <class>application.domain.MemberWithVersion</class>
+    <class>application.domain.Member</class>
     <properties>
       <!-- 필수 속성 -->
       <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
