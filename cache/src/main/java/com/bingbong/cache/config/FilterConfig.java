@@ -9,13 +9,13 @@ import org.springframework.web.filter.ShallowEtagHeaderFilter;
 @Configuration
 public class FilterConfig {
 
-    // Filter를 통해 해당 경로 ETag 추가
+    // Filter를 통해 해당 URL에 ETag 추가
     @Bean
     public FilterRegistrationBean<Filter> filterRegistrationBean() {
         FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>();
         Filter etagFilter = new ShallowEtagHeaderFilter();
         registrationBean.setFilter(etagFilter);
-        registrationBean.addUrlPatterns("/home/etag/*");
+        registrationBean.addUrlPatterns("/home/etag");
         return registrationBean;
     }
 }

@@ -12,7 +12,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/index.html")
             .addResourceLocations("classpath:/static/")
-            .setCachePeriod(60 * 60 * 24 * 365);
+            .setCachePeriod(60 * 60 * 24 * 365); // maxAge 기간
 //            .setCacheControl(CacheControl.maxAge(60 * 60 * 24 * 365, TimeUnit.SECONDS));
     }
 }

@@ -1,6 +1,7 @@
 package com.bingbong.cache.controller;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -31,7 +32,7 @@ class EtagTest {
     // @formatter:off
     @DisplayName("/home/etag 경로 요청할 때 Cache-Control 및 Etag 적용")
     @Test
-    void test() {
+    void requestWithEtagTest() {
         ExtractableResponse<Response> beforeResponse = given()
             .when()
                 .get("/home/etag")
@@ -44,7 +45,8 @@ class EtagTest {
 
         logger.debug("eTag : {}", eTag);
 
-        ExtractableResponse<Response> afterResponse = given()
+        // 브라우저에서 자동으로 If-None-Match 헤더를 붙여준다.
+        given()
                .header("If-None-Match", eTag)
             .when()
                 .get("home/etag")
@@ -52,6 +54,25 @@ class EtagTest {
                 .statusCode(HttpStatus.NOT_MODIFIED.value())
                 .extract();
     }
+
+    @DisplayName("/home/no-etag 경로 요청할 때는 필터에서 걸러져서 E-tag가 적용되지 않음")
+    @Test
+    void requestWithoutEtagTest() {
+        ExtractableResponse<Response> response = given()
+        .when()
+            .get("/home/no-etag")
+        .then()
+            .statusCode(HttpStatus.OK.value())
+            .header("Cache-Control", "max-age=" + 60 * 60 * 24 * 365)
+            .extract();
+
+        String eTag = response.header("ETag");
+
+        assertThat(eTag).isNull();
+    }
+
+
+
     // @formatter:on
 
 }
