@@ -1,4 +1,4 @@
-package things.functionalInterface;
+package things.functionalinterface;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
