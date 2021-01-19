@@ -8,6 +8,8 @@ import com.bingbong.jpabook.jpashop.domain.item.Item;
 import com.bingbong.jpabook.jpashop.respository.ItemRepository;
 import com.bingbong.jpabook.jpashop.respository.MemberRepository;
 import com.bingbong.jpabook.jpashop.respository.OrderRepository;
+import com.bingbong.jpabook.jpashop.respository.OrderSearch;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +44,10 @@ public class OrderService {
     public void cancelOrder(Long orderId) {
         Order order = orderRepository.findOne(orderId);
         order.cancel();
+    }
+
+    public List<Order> findOrders(OrderSearch orderSearch) {
+        return orderRepository.findAllByString(orderSearch);
     }
 
 //    public List<Order> findOrders
