@@ -1,6 +1,7 @@
 package com.bingbong.jpabook.jpashop.domain.item;
 
 import com.bingbong.jpabook.jpashop.domain.Category;
+import com.bingbong.jpabook.jpashop.exception.NotEnoughStockException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -32,4 +33,17 @@ public abstract class Item {
 
     @ManyToMany(mappedBy = "items")
     private List<Category> categories = new ArrayList<>();
+
+    public void addStock(int quantity) {
+        this.stockQuantity += quantity;
+    }
+
+    // setter를 뚫어놓는 게 아니라 비즈니스 로직을 가지고 대상을 변경하기
+    public void removeStock(int quantity) {
+        int restStock = this.stockQuantity - quantity;
+        if (restStock < 0) {
+            throw new NotEnoughStockException("need more stock");
+        }
+        this.stockQuantity = restStock;
+    }
 }
