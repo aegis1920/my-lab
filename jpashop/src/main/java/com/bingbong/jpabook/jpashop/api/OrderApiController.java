@@ -1,19 +1,16 @@
 package com.bingbong.jpabook.jpashop.api;
 
-import com.bingbong.jpabook.jpashop.domain.Address;
 import com.bingbong.jpabook.jpashop.domain.Order;
-import com.bingbong.jpabook.jpashop.domain.OrderItem;
-import com.bingbong.jpabook.jpashop.domain.OrderStatus;
 import com.bingbong.jpabook.jpashop.respository.OrderRepository;
 import com.bingbong.jpabook.jpashop.respository.OrderSearch;
 import com.bingbong.jpabook.jpashop.respository.order.query.OrderFlatDto;
 import com.bingbong.jpabook.jpashop.respository.order.query.OrderItemQueryDto;
 import com.bingbong.jpabook.jpashop.respository.order.query.OrderQueryDto;
 import com.bingbong.jpabook.jpashop.respository.order.query.OrderQueryRepository;
-import java.time.LocalDateTime;
+import com.bingbong.jpabook.jpashop.service.query.OrderDto;
+import com.bingbong.jpabook.jpashop.service.query.OrderQueryService;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +22,7 @@ public class OrderApiController {
 
     private final OrderRepository orderRepository;
     private final OrderQueryRepository orderQueryRepository;
+    private final OrderQueryService orderQueryService;
 
     // OrderSimpleApiController에 있는 버전 1과 같음. 엔티티를 직접 노출하기 때문에 안 씀
     @GetMapping("/api/v1/orders")
@@ -59,6 +57,7 @@ public class OrderApiController {
     @GetMapping("/api/v3/orders")
     public List<OrderDto> ordersV3() {
         List<Order> all = orderRepository.findAllWithItem();
+//        orderQueryService.ordersV3(); // 얘로 하게 되면 OSIV가 꺼져도 트랜잭션 안이라서 괜찮다.
 
         return all.stream()
             .map(OrderDto::new)
@@ -123,39 +122,6 @@ public class OrderApiController {
             .collect(Collectors.toList());
     }
 
-    @Data
-    static class OrderDto {
 
-        private Long orderId;
-        private String name;
-        private LocalDateTime orderDate; //주문시간
-        private OrderStatus orderStatus;
-        private Address address;
-        private List<OrderItemDto> orderItems;
 
-        public OrderDto(Order order) {
-            orderId = order.getId();
-            name = order.getMember().getName();
-            orderDate = order.getOrderDate();
-            orderStatus = order.getStatus();
-            address = order.getDelivery().getAddress();
-            orderItems = order.getOrderItems().stream()
-                .map(OrderItemDto::new)
-                .collect(Collectors.toList());
-        }
-    }
-
-    @Data
-    static class OrderItemDto {
-
-        private String itemName;
-        private int orderPrice;
-        private int count;
-
-        public OrderItemDto(OrderItem orderItem) {
-            itemName = orderItem.getItem().getName();
-            orderPrice = orderItem.getOrderPrice();
-            count = orderItem.getCount();
-        }
-    }
 }
