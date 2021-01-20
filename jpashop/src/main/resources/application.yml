@@ -12,6 +12,7 @@ spring:
       hibernate:
 #        show_sql: true
         format_sql: true
+        default_batch_fetch_size: 100 # in 쿼리로 가져온다. in쿼리의 개수를 몇개로 할것인가?
 
 logging:
   level:
