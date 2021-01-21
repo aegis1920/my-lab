@@ -1,4 +1,4 @@
-package com.bingbong.effectivejava.item9;
+package com.bingbong.effectivejava.item8;
 
 import java.io.BufferedReader;
 import java.io.IOException;

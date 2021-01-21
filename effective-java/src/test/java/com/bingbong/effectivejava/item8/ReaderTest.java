@@ -1,4 +1,4 @@
-package com.bingbong.effectivejava.item9;
+package com.bingbong.effectivejava.item8;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
