@@ -1,7 +1,8 @@
-package practice;
+package com.bingbong.effectivejava.item18;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +24,7 @@ class CustomHashSetTest {
         assertThat(customHashSet.getAddCount()).isEqualTo(9);
     }
 
-    @DisplayName("더할 때마다 카운트 증가 - 조합")
+    @DisplayName("더할 때마다 카운트 증가 - 컴포지션")
     @Test
     void addAll_Composition() {
         CustomHashSetByComposition<Integer> customHashSet = new CustomHashSetByComposition<>(

@@ -28,6 +28,7 @@ class ComparableTest {
 }
 
 class Student implements Comparable<Student> {
+
     String name;
     int score;
 

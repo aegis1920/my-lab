@@ -1,4 +1,4 @@
-package practice;
+package com.bingbong.effectivejava.item18;
 
 import java.util.Collection;
 import java.util.HashSet;
