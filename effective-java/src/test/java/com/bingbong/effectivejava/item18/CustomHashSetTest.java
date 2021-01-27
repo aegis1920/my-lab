@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class CustomHashSetTest {
+class CustomHashSetTest {
 
     @DisplayName("더할 때마다 카운트 증가 - 상속")
     @Test
@@ -16,8 +16,8 @@ public class CustomHashSetTest {
         CustomHashSetByInheritance<Integer> customHashSet = new CustomHashSetByInheritance<>();
         List<Integer> numbers = Arrays.asList(1, 2, 3, 4);
 
-        customHashSet.add(5);
         customHashSet.addAll(numbers);
+        customHashSet.add(5);
 
         assertThat(customHashSet.getAddCount()).isNotEqualTo(5);
         assertThat(customHashSet.getAddCount()).isEqualTo(9);
@@ -30,8 +30,8 @@ public class CustomHashSetTest {
             new HashSet<>());
         List<Integer> numbers = Arrays.asList(1, 2, 3, 4);
 
-        customHashSet.add(5);
         customHashSet.addAll(numbers);
+        customHashSet.add(5);
 
         assertThat(customHashSet.getAddCount()).isEqualTo(5);
     }
