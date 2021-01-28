@@ -1,0 +1,43 @@
+package com.bingbong.springdatajpa.repository;
+
+import com.bingbong.springdatajpa.domain.Member;
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class MemberJpaRepository {
+
+    @PersistenceContext
+    private EntityManager em;
+
+    public Member save(Member member) {
+        em.persist(member);
+        return member;
+    }
+
+    public void delete(Member member) {
+        em.remove(member);
+    }
+
+    public List<Member> findAll() {
+        // 전체조회는 JPQL을 적용해야함
+        return em.createQuery("select m from Member m", Member.class).getResultList();
+    }
+
+    public Optional<Member> findById(Long id) {
+        Member member = em.find(Member.class, id);
+        return Optional.ofNullable(member);
+    }
+
+    public long count() {
+        return em.createQuery("select count(m) from Member m", Long.class)
+            .getSingleResult(); // 단건일 경우 Single
+    }
+
+    public Member find(Long id) {
+        return em.find(Member.class, id);
+    }
+}
