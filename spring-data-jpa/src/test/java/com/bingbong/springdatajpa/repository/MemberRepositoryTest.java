@@ -7,6 +7,8 @@ import com.bingbong.springdatajpa.domain.Team;
 import com.bingbong.springdatajpa.dto.MemberDto;
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +29,9 @@ class MemberRepositoryTest {
 
     @Autowired
     TeamRepository teamRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     void basicCRUD() {
@@ -168,4 +173,21 @@ class MemberRepositoryTest {
         assertThat(page.hasNext()).isTrue();
     }
 
+    @Test
+    void bulkAgePlus() {
+        memberRepository.save(new Member("member1", 18));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 22));
+
+        int resultCount = memberRepository.bulkAgePlus(20);
+        em.flush();
+        em.clear();
+
+        Member member5 = memberRepository.findMemberByUsername("member5");
+        member5.getAge();
+
+        assertThat(resultCount).isEqualTo(3);
+    }
 }
