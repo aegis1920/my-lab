@@ -207,4 +207,28 @@ class MemberRepositoryTest {
         List<Member> members = memberRepository.findAll();
 //      List<Member> members = memberRepository.findMemberFetchJoin();
     }
+
+    @Test
+    void queryHint() {
+
+        Member member1 = new Member("member1", 18);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        Member findMember = memberRepository.findReadOnlyUsername(member1.getUsername());
+        findMember.setUsername("hello"); // 변경이 안된다고 생각하고 다 무시해버린다. 그냥 변경감지 체크를 안해버린다.
+
+        em.flush();;
+    }
+
+    @Test
+    void lock() {
+        Member member1 = new Member("member1", 18);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        List<Member> findMembers = memberRepository.findLockByUsername(member1.getUsername()); // for update가 생긴다.
+    }
 }
