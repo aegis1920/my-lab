@@ -17,8 +17,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"id", "username", "age"}) // 연관관계 필드까지 toString을 해주면 무한 참조가 일어날 수 있다. 그래서 보통은 연관관계 필드는 toString에 넣지 않는다.
-public class Member {
+@ToString(of = {"id", "username", "age"})
+// 연관관계 필드까지 toString을 해주면 무한 참조가 일어날 수 있다. 그래서 보통은 연관관계 필드는 toString에 넣지 않는다.
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue
