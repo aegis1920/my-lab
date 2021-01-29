@@ -216,10 +216,10 @@ class MemberRepositoryTest {
         em.flush();
         em.clear();
 
-        Member findMember = memberRepository.findReadOnlyUsername(member1.getUsername());
+        Member findMember = memberRepository.findReadOnlyByUsername(member1.getUsername());
         findMember.setUsername("hello"); // 변경이 안된다고 생각하고 다 무시해버린다. 그냥 변경감지 체크를 안해버린다.
 
-        em.flush();;
+        em.flush();
     }
 
     @Test
@@ -230,5 +230,10 @@ class MemberRepositoryTest {
         em.clear();
 
         List<Member> findMembers = memberRepository.findLockByUsername(member1.getUsername()); // for update가 생긴다.
+    }
+
+    @Test
+    void callCustom() {
+        memberRepository.findMemberCustom();
     }
 }
