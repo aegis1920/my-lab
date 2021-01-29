@@ -190,4 +190,21 @@ class MemberRepositoryTest {
 
         assertThat(resultCount).isEqualTo(3);
     }
+
+    @Test
+    void findMemberLazy() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        memberRepository.save(new Member("member1", 18, teamA));
+        memberRepository.save(new Member("member2", 19, teamB));
+
+        em.flush();
+        em.clear();
+
+        List<Member> members = memberRepository.findAll();
+//      List<Member> members = memberRepository.findMemberFetchJoin();
+    }
 }
