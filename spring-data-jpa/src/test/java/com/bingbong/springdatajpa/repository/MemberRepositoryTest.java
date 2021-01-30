@@ -236,4 +236,21 @@ class MemberRepositoryTest {
     void callCustom() {
         memberRepository.findMemberCustom();
     }
+
+    @Test
+    void projections() {
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 18, teamA);
+        Member m2 = new Member("m2", 19, teamA);
+        em.persist(m1);
+        em.persist(m2);
+        em.flush();
+        em.clear();
+
+        List<NestedClosedProjections> result = memberRepository.findProjectionsByUsername("m1", NestedClosedProjections.class);
+
+        result.forEach(System.out::println);
+    }
 }
