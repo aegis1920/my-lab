@@ -3,7 +3,6 @@ package com.bingbong.springdatajpa.controller;
 import com.bingbong.springdatajpa.domain.Member;
 import com.bingbong.springdatajpa.dto.MemberDto;
 import com.bingbong.springdatajpa.repository.MemberRepository;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,11 +34,11 @@ public class MemberController {
         return page.map(MemberDto::new);
     }
 
-    @PostConstruct
-    public void init() {
-
-        for (int i = 0; i < 100; i++) {
-            memberRepository.save(new Member("user" + i, i));
-        }
-    }
+//    @PostConstruct
+//    public void init() {
+//
+//        for (int i = 0; i < 100; i++) {
+//            memberRepository.save(new Member("user" + i, i));
+//        }
+//    }
 }

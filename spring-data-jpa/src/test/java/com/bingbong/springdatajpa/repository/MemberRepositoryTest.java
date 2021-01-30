@@ -253,4 +253,27 @@ class MemberRepositoryTest {
 
         result.forEach(System.out::println);
     }
+
+    @Test
+    void findByNativeQuery() {
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 18, teamA);
+        Member m2 = new Member("m2", 19, teamA);
+        em.persist(m1);
+        em.persist(m2);
+        em.flush();
+        em.clear();
+
+        Page<MemberProjection> result = memberRepository
+            .findByNativeProjection(PageRequest.of(0, 10));
+
+        List<MemberProjection> contents = result.getContent();
+
+        for (MemberProjection content : contents) {
+            System.out.println("username : " + content.getUsername());
+            System.out.println("teamname : " + content.getTeamName());
+        }
+    }
 }
