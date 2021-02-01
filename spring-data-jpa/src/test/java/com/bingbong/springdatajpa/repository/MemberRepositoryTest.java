@@ -186,7 +186,7 @@ class MemberRepositoryTest {
         em.clear();
 
         Member member5 = memberRepository.findMemberByUsername("member5");
-        member5.getAge();
+        assertThat(member5.getAge()).isEqualTo(23);
 
         assertThat(resultCount).isEqualTo(3);
     }

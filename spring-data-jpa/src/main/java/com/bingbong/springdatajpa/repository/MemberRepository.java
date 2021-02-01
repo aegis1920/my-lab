@@ -43,7 +43,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     Page<Member> findByAge(int age, Pageable pageable);
 //    Slice<Member> findByAge(int age, Pageable pageable);
 
-    @Modifying(clearAutomatically = true)
+//    @Modifying(clearAutomatically = true) 자동으로 flush하고 clear해준다.
+    @Modifying
     @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
     int bulkAgePlus(@Param("age") int age);
 
