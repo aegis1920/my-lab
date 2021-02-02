@@ -7,14 +7,17 @@ import static org.springframework.util.StringUtils.hasText;
 import com.bingbong.querydsl.dto.MemberSearchCondition;
 import com.bingbong.querydsl.dto.MemberTeamDto;
 import com.bingbong.querydsl.dto.QMemberTeamDto;
+import com.bingbong.querydsl.entity.Member;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
@@ -94,24 +97,19 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
             .limit(pageable.getPageSize())
             .fetch();
 
-        long total = queryFactory
-            .select(new QMemberTeamDto(
-                member.id.as("memberId"),
-                member.username,
-                member.age,
-                team.id.as("teamId"),
-                team.name.as("teamName")))
-            .from(member)
+        JPAQuery<Member> countQuery = queryFactory
+            .selectFrom(member)
             .leftJoin(member.team, team)
             .where(
                 usernameEq(condition.getUsername()),
                 teamNameEq(condition.getTeamName()),
                 ageGoe(condition.getAgeGoe()),
                 ageLoe(condition.getAgeLoe())
-            )
-            .fetchCount();
+            );
 
-        return new PageImpl<>(content, pageable, total);
+        // 카운트 쿼리가 필요하면 날리고 필요하지 않으면 안 날리고
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
+//        return new PageImpl<>(content, pageable, total);
     }
 
     private BooleanExpression usernameEq(String username) {
