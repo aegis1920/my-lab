@@ -10,7 +10,6 @@ import com.bingbong.querydsl.dto.QMemberTeamDto;
 import com.bingbong.querydsl.entity.Member;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -18,38 +17,18 @@ import javax.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.support.PageableExecutionUtils;
 
-public class MemberRepositoryImpl extends QuerydslRepositorySupport implements
-    MemberRepositoryCustom {
+public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
     public MemberRepositoryImpl(EntityManager em) {
-        super(Member.class);
         this.queryFactory = new JPAQueryFactory(em);
     }
 
     @Override
     public List<MemberTeamDto> search(MemberSearchCondition condition) {
-
-        // QueryDSL 3버전에서는 이렇게 했었음
-        List<MemberTeamDto> result = from(member)
-            .leftJoin(member.team, team)
-            .where(
-                usernameEq(condition.getUsername()),
-                teamNameEq(condition.getTeamName()),
-                ageGoe(condition.getAgeGoe()),
-                ageLoe(condition.getAgeLoe())
-            )
-            .select(new QMemberTeamDto(
-                member.id.as("memberId"),
-                member.username,
-                member.age,
-                team.id.as("teamId"),
-                team.name.as("teamName")))
-            .fetch();
 
         return queryFactory
             .select(new QMemberTeamDto(
@@ -90,32 +69,6 @@ public class MemberRepositoryImpl extends QuerydslRepositorySupport implements
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetchResults();
-
-        List<MemberTeamDto> content = results.getResults();
-        long total = results.getTotal();
-
-        return new PageImpl<>(content, pageable, total);
-    }
-
-    public Page<MemberTeamDto> searchPageSimple2(MemberSearchCondition condition,
-        Pageable pageable) {
-        JPQLQuery<MemberTeamDto> jpaQuery = from(member)
-            .leftJoin(member.team, team)
-            .where(
-                usernameEq(condition.getUsername()),
-                teamNameEq(condition.getTeamName()),
-                ageGoe(condition.getAgeGoe()),
-                ageLoe(condition.getAgeLoe())
-            )
-            .select(new QMemberTeamDto(
-                member.id.as("memberId"),
-                member.username,
-                member.age,
-                team.id.as("teamId"),
-                team.name.as("teamName")));
-
-        QueryResults<MemberTeamDto> results = getQuerydsl()
-            .applyPagination(pageable, jpaQuery).fetchResults();
 
         List<MemberTeamDto> content = results.getResults();
         long total = results.getTotal();
