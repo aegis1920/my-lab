@@ -17,4 +17,9 @@ public class HomeController {
     public String homeWithNoEtag() {
         return "/index";
     }
+
+    @GetMapping("/nothing")
+    public String nothing() {
+        return "/nothing";
+    }
 }

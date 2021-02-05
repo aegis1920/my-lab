@@ -17,9 +17,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class EtagTest {
+class LastModifiedTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(EtagTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(LastModifiedTest.class);
 
     @LocalServerPort
     private int port;
@@ -31,46 +31,45 @@ class EtagTest {
 
     // @formatter:off
 
-    @DisplayName("/home/etag 경로 요청할 때 Etag 적용, index.html에 Cache-Control 적용")
+    @DisplayName("/home/etag 경로 요청할 때 Cache-Control 및 Last-Modified 자동 적용")
     @Test
-    void requestWithEtagTest() {
-        ExtractableResponse<Response> response =
-            given()
+    void requestWithLastModifiedTest() {
+        ExtractableResponse<Response> response = given()
             .when()
                 .get("/home/etag")
             .then()
                 .statusCode(HttpStatus.OK.value())
-                .header("Cache-Control", "max-age=" + 60 * 60 * 24 * 365)
                 .extract();
 
-        String eTag = response.header("ETag");
+        String lastModified = response.header("Last-Modified");
 
-        logger.debug("eTag : {}", eTag);
+        assertThat(lastModified).isNotNull();
 
-        // 브라우저에서 자동으로 If-None-Match 헤더를 붙여준다.
+        logger.debug("Last-Modified : {}", lastModified);
+
+        // 브라우저에서 자동으로 If-Modified-Since 헤더를 붙여준다.
         given()
-           .header("If-None-Match", eTag)
+            .header("If-Modified-Since", lastModified)
         .when()
-            .get("home/etag")
+            .get("/home/etag")
         .then()
             .statusCode(HttpStatus.NOT_MODIFIED.value())
             .extract();
     }
 
-    @DisplayName("/home/no-etag 경로 요청할 때는 필터에서 걸러져서 E-tag가 적용되지 않음")
+    @DisplayName("nothing.html에는 LastModified가 적용되지 않음")
     @Test
-    void requestWithoutEtagTest() {
+    void requestWithoutLastModifiedTest() {
         ExtractableResponse<Response> response = given()
-        .when()
-            .get("/home/no-etag")
-        .then()
-            .statusCode(HttpStatus.OK.value())
-            .header("Cache-Control", "max-age=" + 60 * 60 * 24 * 365) // 똑같이 index 파일에 접근하기 때문에 Cache-Control은 유지
-            .extract();
+            .when()
+                .get("/home/nothing")
+            .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
 
-        String eTag = response.header("ETag");
+        String lastModified = response.header("Last-Modified");
 
-        assertThat(eTag).isNull();
+        assertThat(lastModified).isNull();
     }
     // @formatter:on
 }
