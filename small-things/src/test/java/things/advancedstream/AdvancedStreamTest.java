@@ -1,6 +1,7 @@
 package things.advancedstream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +29,31 @@ class AdvancedStreamTest {
             new User("hello4", 11, "master"),
             new User("hello5", 40, "master")
         );
+    }
+
+    @DisplayName("지연 평가 테스트")
+    @Test
+    void lazyEvaluation() {
+        List<Integer> numbers = Arrays.asList(10, 20, 30, 40, 50, 60);
+        List<Integer> filteredNumbers = numbers.stream()
+            .filter(num -> {
+                System.out.println("num < 50");
+                return num < 50;
+            })
+            .limit(3).collect(Collectors.toList());
+
+        assertThat(filteredNumbers).containsExactly(10, 20, 30);
+    }
+
+    @DisplayName("스트림은 다시 사용될 수 없음")
+    @Test
+    void reuse() {
+        Stream<User> stream = users.stream();
+
+        stream.forEach(System.out::println);
+
+        assertThatThrownBy(() -> stream.forEach(System.out::println))
+            .isInstanceOf(IllegalStateException.class);
     }
 
     @DisplayName("List 개수 카운팅하기")
@@ -95,5 +123,26 @@ class AdvancedStreamTest {
             .collect(Collectors.groupingBy(User::getAuthority));
 
         assertThat(map.entrySet().size()).isEqualTo(2);
+    }
+
+    @DisplayName("List에서 권한으로 카운팅하기")
+    @Test
+    void groupingByCounting() {
+        Map<String, Long> map = users.stream()
+            .collect(Collectors.groupingBy(User::getAuthority, Collectors.counting()));
+
+        assertThat(map.entrySet().size()).isEqualTo(2);
+    }
+
+    @DisplayName("Parallel 병렬 테스트, 순서와 스레드 이름")
+    @Test
+    void parallel() {
+        System.out.println("Sequence");
+        IntStream.rangeClosed(1, 5)
+            .forEach(value -> System.out.println("Thread Name : " + Thread.currentThread().getName() + ", value : " + value));
+
+        System.out.println("Parallel");
+        IntStream.rangeClosed(1, 5).parallel()
+            .forEach(value -> System.out.println("Thread Name : " + Thread.currentThread().getName() + ", value : " + value));
     }
 }
