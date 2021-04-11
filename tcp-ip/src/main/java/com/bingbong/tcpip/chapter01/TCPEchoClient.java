@@ -6,7 +6,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
-public class HelloClient {
+public class TCPEchoClient {
 
     public static void main(String[] args) {
         // 소켓 생성

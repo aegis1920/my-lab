@@ -7,7 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
-public class HelloServer {
+public class TCPEchoServer {
 
     public static void main(String[] args) {
         Socket socket;
