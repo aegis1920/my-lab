@@ -8,17 +8,18 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class UDPEchoTest {
+class UdpEchoTest {
 
-    private UDPEchoClient client;
+    private UdpEchoClient client;
 
     @BeforeEach
     public void setup() throws UnknownHostException, SocketException {
         int port = 5001;
-        new UDPEchoServer(port).start();
-        client = new UDPEchoClient(InetAddress.getLocalHost(), port);
+        new UdpEchoServer(port).start();
+        client = new UdpEchoClient(InetAddress.getLocalHost(), port);
     }
 
     @AfterEach
@@ -27,8 +28,30 @@ class UDPEchoTest {
         client.close();
     }
 
+    @DisplayName("Echo Client, Echo Server 테스트, not connected UDP 소켓")
     @Test
     void sendMessage() throws IOException {
+        String message1 = "Hello World!1";
+        String receivedMessage1 = client.send(message1);
+
+        assertThat(receivedMessage1).isEqualTo(message1);
+
+        String message2 = "Hello World!2";
+        String receivedMessage2 = client.send(message2);
+
+        assertThat(receivedMessage2).isEqualTo(message2);
+
+        String message3 = "Hello World!3";
+        String receivedMessage3 = client.send(message3);
+
+        assertThat(receivedMessage3).isEqualTo(message3);
+    }
+
+    @DisplayName("Echo Client, Echo Server 테스트, connected UDP 소켓")
+    @Test
+    void sendMessageWithConnectedUdp() throws IOException {
+        client.makeConnectedUdp();
+
         String message1 = "Hello World!1";
         String receivedMessage1 = client.send(message1);
 

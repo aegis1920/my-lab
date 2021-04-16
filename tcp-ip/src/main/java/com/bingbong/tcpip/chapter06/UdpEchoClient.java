@@ -7,24 +7,30 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
-public class UDPEchoClient {
+public class UdpEchoClient {
 
     private final DatagramSocket socket = new DatagramSocket();
     private final int port;
     private final InetAddress address;
 
-    public UDPEchoClient(InetAddress address, int port) throws SocketException {
+    public UdpEchoClient(InetAddress address, int port) throws SocketException {
         this.address = address;
         this.port = port;
-//        socket.connect(address, port);
+    }
+
+    public void makeConnectedUdp() {
+        socket.connect(address, port);
     }
 
     public String send(String message) throws IOException {
         byte[] buffer = message.getBytes(StandardCharsets.UTF_8);
-        // connect 시
-//        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-        // 문자열을 버퍼로 만들고 packet 생성
+
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
+
+        if (socket.isConnected()) {
+            packet = new DatagramPacket(buffer, buffer.length);
+        }
+
         socket.send(packet);
         packet = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet);
