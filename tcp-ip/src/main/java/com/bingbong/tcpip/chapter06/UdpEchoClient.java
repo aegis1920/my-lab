@@ -25,14 +25,15 @@ public class UdpEchoClient {
     public String send(String message) throws IOException {
         byte[] buffer = message.getBytes(StandardCharsets.UTF_8);
 
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
+        DatagramPacket packet;
 
         if (socket.isConnected()) {
             packet = new DatagramPacket(buffer, buffer.length);
+        } else {
+            packet = new DatagramPacket(buffer, buffer.length, address, port);
         }
 
         socket.send(packet);
-        packet = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet);
 
         return new String(packet.getData());
@@ -40,5 +41,9 @@ public class UdpEchoClient {
 
     public void close() {
         socket.close();
+    }
+
+    public boolean isConnected() {
+        return socket.isConnected();
     }
 }

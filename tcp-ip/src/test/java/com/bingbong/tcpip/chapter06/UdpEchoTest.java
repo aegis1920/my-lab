@@ -45,6 +45,7 @@ class UdpEchoTest {
         String receivedMessage3 = client.send(message3);
 
         assertThat(receivedMessage3).isEqualTo(message3);
+        assertThat(client.isConnected()).isFalse();
     }
 
     @DisplayName("Echo Client, Echo Server 테스트, connected UDP 소켓")
@@ -66,5 +67,6 @@ class UdpEchoTest {
         String receivedMessage3 = client.send(message3);
 
         assertThat(receivedMessage3).isEqualTo(message3);
+        assertThat(client.isConnected()).isTrue();
     }
 }

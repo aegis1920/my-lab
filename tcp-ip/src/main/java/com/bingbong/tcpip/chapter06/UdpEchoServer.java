@@ -22,7 +22,6 @@ public class UdpEchoServer extends Thread {
         while (true) {
             try {
                 socket.receive(packet);
-                packet = new DatagramPacket(buffer, packet.getLength(), packet.getAddress(), packet.getPort());
                 String receivedData = new String(packet.getData(), 0, packet.getLength());
                 System.out.println("클라이언트로부터 받은 메시지 : " + receivedData);
 
