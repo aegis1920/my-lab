@@ -21,3 +21,5 @@ spring:
       on-profile: local
   batch:
     initialize-schema: always
+    job:
+      names: ${job.name:NONE}
