@@ -1,0 +1,25 @@
+spring:
+  profiles:
+    active: local
+
+---
+spring:
+  datasource:
+    platform: h2
+    hikari:
+      driver-class-name: org.h2.Driver
+      jdbc-url: jdbc:h2:tcp://localhost:9092/mem:testdb
+      username: sa
+      password:
+  jpa:
+    database-platform: H2
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+  config:
+    activate:
+      on-profile: local
+  batch:
+    initialize-schema: always
+    job:
+      names: ${job.name:NONE}
