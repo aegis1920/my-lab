@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -19,6 +20,7 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan
 @EnableTransactionManagement
+@EnableJpaRepositories
 public class MovieBuddyApplication {
 
 	// JPA로 영화 정보를 저장하고 조회하는 애플리케이션
