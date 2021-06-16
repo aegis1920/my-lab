@@ -5,6 +5,7 @@ import com.bingbong.domain.Movie;
 import com.bingbong.domain.MovieDataRepository;
 import com.bingbong.domain.MovieRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -19,14 +20,14 @@ class JpaMovieRepositoryTest {
 	@Autowired
 	MovieRepository movieRepository;
 	
-	@Autowired
-	MovieDataRepository movieDataRepository;
+//	@Autowired
+//	MovieDataRepository movieDataRepository;
 	
 	@Test
 	void save() {
 		var movie = new Movie("고질라 VS 콩", "아무개");
 		Movie save = movieRepository.save(movie);
-		
+
 		assertNotNull(save.getId());
 	}
 	
@@ -41,22 +42,22 @@ class JpaMovieRepositoryTest {
 		assertEquals(save.getTitle(), result.getTitle());
 	}
 	
-	@Test
-	void save_Data() {
-		var movie = new Movie("고질라 VS 콩", "아무개");
-		Movie save = movieDataRepository.save(movie);
-		
-		assertNotNull(save.getId());
-	}
-	
-	@Test
-	void savesAndFindMovieByDirector_Data() {
-		var movie = new Movie("고질라 VS 콩", "아무개");
-		Movie save = movieDataRepository.save(movie);
-		assertNotNull(save.getId());
-		
-		var result = movieDataRepository.findByDirector(movie.getDirector());
-		assertEquals(save, result);
-		assertEquals(save.getTitle(), result.getTitle());
-	}
+//	@Test
+//	void save_Data() {
+//		var movie = new Movie("고질라 VS 콩", "아무개");
+//		Movie save = movieDataRepository.save(movie);
+//
+//		assertNotNull(save.getId());
+//	}
+//
+//	@Test
+//	void savesAndFindMovieByDirector_Data() {
+//		var movie = new Movie("고질라 VS 콩", "아무개");
+//		Movie save = movieDataRepository.save(movie);
+//		assertNotNull(save.getId());
+//
+//		var result = movieDataRepository.findByDirector(movie.getDirector());
+//		assertEquals(save, result);
+//		assertEquals(save.getTitle(), result.getTitle());
+//	}
 }

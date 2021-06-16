@@ -31,9 +31,7 @@ class JdkDynamicProxyTest {
 		// save할 때 그대로 다시 나오기 때문에 같은 객체가 나온다.
 		assertEquals(movie.getTitle(), proxy.save(movie).getTitle());
 		assertEquals(movie.getDirector(), proxy.findByDirector(movie.getDirector()).getDirector());
-		
-		// 순수하게 프록시를 생성하는 기능만 담당
-//		ProxyFactoryBean
+
 		
 	}
 	
