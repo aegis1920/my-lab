@@ -1,0 +1,40 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.bingbong'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // EJB를 위함
+    implementation 'org.glassfish.main.appclient:gf-client:5.1.0'
+    implementation 'org.glassfish.mq:imgjmsra:5.1'
+
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-jms'
+
+    testImplementation 'org.springframework:spring-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+}
+
+test {
+    useJUnitPlatform()
+}
