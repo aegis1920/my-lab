@@ -1,0 +1,28 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group 'org.bingbong'
+version '1.0-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'net.jodah', name: 'typetools', version: '0.5.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
