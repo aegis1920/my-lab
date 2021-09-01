@@ -1,11 +1,14 @@
 package com.bingbong.defguidespringbatch.jobs
 
+import com.bingbong.defguidespringbatch.validators.ParameterValidator
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepScope
+import org.springframework.batch.core.job.CompositeJobParametersValidator
+import org.springframework.batch.core.job.DefaultJobParametersValidator
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.core.step.tasklet.Tasklet
 import org.springframework.batch.repeat.RepeatStatus
@@ -26,6 +29,7 @@ class HelloWorldJob(
     fun job(): Job {
         return this.jobBuilderFactory.get("basicJob")
             .start(step1())
+            .validator(validator())
             .next(step2())
             .next(step3())
             .build()
@@ -74,6 +78,18 @@ class HelloWorldJob(
             println("Hello ${name}!!!!!!!!!!!!!!!!!!!!!")
             RepeatStatus.FINISHED
         }
+    }
+
+    @Bean
+    fun validator(): CompositeJobParametersValidator {
+        // CompositeJobParametersValidator를 통해 두 개의 Validator를 지정해줄 수 있다. 여기선 ParameterValidator 먼저 하고, 그 다음에 DefaultJobParametersValidator
+        val validator = CompositeJobParametersValidator()
+        // 기본적으로 지원해주는 Validator. requireKey와 OptionalKey 지원
+        val defaultJobParametersValidator = DefaultJobParametersValidator(arrayOf("fileName"), arrayOf("name", "executionDate"))
+        defaultJobParametersValidator.afterPropertiesSet()
+        validator.setValidators(listOf(ParameterValidator(), defaultJobParametersValidator))
+
+        return validator
     }
 }
 
