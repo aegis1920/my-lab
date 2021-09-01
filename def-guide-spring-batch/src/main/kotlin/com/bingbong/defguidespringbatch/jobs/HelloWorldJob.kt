@@ -1,5 +1,6 @@
 package com.bingbong.defguidespringbatch.jobs
 
+import com.bingbong.defguidespringbatch.increment.DailyJobTimeStamper
 import com.bingbong.defguidespringbatch.validators.ParameterValidator
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -9,6 +10,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.job.CompositeJobParametersValidator
 import org.springframework.batch.core.job.DefaultJobParametersValidator
+import org.springframework.batch.core.launch.support.RunIdIncrementer
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.core.step.tasklet.Tasklet
 import org.springframework.batch.repeat.RepeatStatus
@@ -30,6 +32,8 @@ class HelloWorldJob(
         return this.jobBuilderFactory.get("basicJob")
             .start(step1())
             .validator(validator())
+            .incrementer(RunIdIncrementer()) // 얘는 기본 증가값. validator에 run.id를 추가해줘야된다. 근데 증분기를 위 아래 두 개나 해주니 얘는 run.id가 현재 값으로 고정된다. 아마 아래에 있는 것만 실행시키는듯?
+            .incrementer(DailyJobTimeStamper()) // 얘 덕분에 잡 파라미터가 매번 바뀌어서 매번 잡 인스턴스를 만들기 때문에 편하게 실행시킬 수 있다.
             .next(step2())
             .next(step3())
             .build()
@@ -85,7 +89,8 @@ class HelloWorldJob(
         // CompositeJobParametersValidator를 통해 두 개의 Validator를 지정해줄 수 있다. 여기선 ParameterValidator 먼저 하고, 그 다음에 DefaultJobParametersValidator
         val validator = CompositeJobParametersValidator()
         // 기본적으로 지원해주는 Validator. requireKey와 OptionalKey 지원
-        val defaultJobParametersValidator = DefaultJobParametersValidator(arrayOf("fileName"), arrayOf("name", "executionDate"))
+        // 새로운 JobParameter가 추가될 때마다 validator에도 추가해줘야한다.
+        val defaultJobParametersValidator = DefaultJobParametersValidator(arrayOf("fileName"), arrayOf("name", "executionDate", "run.id", "currentDate"))
         defaultJobParametersValidator.afterPropertiesSet()
         validator.setValidators(listOf(ParameterValidator(), defaultJobParametersValidator))
 
