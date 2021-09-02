@@ -13,6 +13,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.job.CompositeJobParametersValidator
 import org.springframework.batch.core.job.DefaultJobParametersValidator
 import org.springframework.batch.core.launch.support.RunIdIncrementer
+import org.springframework.batch.core.listener.ExecutionContextPromotionListener
 import org.springframework.batch.core.listener.JobListenerFactoryBean
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.core.step.tasklet.Tasklet
@@ -41,6 +42,7 @@ class HelloWorldJob(
             .next(step3())
             .listener(JobLoggerListener()) // 특정 시점에 로직을 실행시킬 수 있음
             .listener(JobListenerFactoryBean.getListener(loggerListener())) // 어노테이션용 Listener 근데 더 위 친구보다 더 빨리 실행된다. (얘가 먼저 출력됨)
+            .next(step4())
             .build()
     }
 
@@ -64,6 +66,14 @@ class HelloWorldJob(
     fun step3(): Step {
         return this.stepBuilderFactory.get("step3")
             .tasklet(helloWorldTaskletLateBiding(null)) // 늦게 binding 되기 때문에 null을 넣어준다.
+            .build()
+    }
+
+    @Bean
+    fun step4(): Step {
+        return this.stepBuilderFactory.get("step4")
+            .tasklet(ExecutionContextTasklet())
+            .listener(promotionListener())
             .build()
     }
 
@@ -105,6 +115,21 @@ class HelloWorldJob(
     @BeforeJob
     fun loggerListener() {
         println("@BeforeJob 어노테이션으로 실행시켜보긔")
+    }
+
+    /**
+     *
+     * name 키가 Step의 ExecutionContext에 있을 때 name 키를 승격시켜줄 수 있다?
+     * 스텝 간에 공유할 데이터가 있지만 첫 번째 스텝이 성공했을 때만 공유하게 하고 싶을 때 사용한다.
+     * 성공적으로 종료되면 Step의 ExecutionContext에서 name 키를 찾아 Job의 ExecutionContext에 복사한다.
+     * name 키를 찾지 못하면 기본적으로는 아무일도 일어나지 않지만 예외를 발생하게 할 수 있다.
+     */
+    @Bean
+    fun promotionListener(): ExecutionContextPromotionListener {
+        val listener = ExecutionContextPromotionListener()
+        listener.setKeys(arrayOf("name"))
+
+        return listener
     }
 }
 
