@@ -1,9 +1,11 @@
 package com.bingbong.defguidespringbatch.jobs
 
 import com.bingbong.defguidespringbatch.increment.DailyJobTimeStamper
+import com.bingbong.defguidespringbatch.listener.JobLoggerListener
 import com.bingbong.defguidespringbatch.validators.ParameterValidator
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
+import org.springframework.batch.core.annotation.BeforeJob
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
@@ -11,6 +13,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.job.CompositeJobParametersValidator
 import org.springframework.batch.core.job.DefaultJobParametersValidator
 import org.springframework.batch.core.launch.support.RunIdIncrementer
+import org.springframework.batch.core.listener.JobListenerFactoryBean
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.core.step.tasklet.Tasklet
 import org.springframework.batch.repeat.RepeatStatus
@@ -36,6 +39,8 @@ class HelloWorldJob(
             .incrementer(DailyJobTimeStamper()) // 얘 덕분에 잡 파라미터가 매번 바뀌어서 매번 잡 인스턴스를 만들기 때문에 편하게 실행시킬 수 있다.
             .next(step2())
             .next(step3())
+            .listener(JobLoggerListener()) // 특정 시점에 로직을 실행시킬 수 있음
+            .listener(JobListenerFactoryBean.getListener(loggerListener())) // 어노테이션용 Listener 근데 더 위 친구보다 더 빨리 실행된다. (얘가 먼저 출력됨)
             .build()
     }
 
@@ -95,6 +100,11 @@ class HelloWorldJob(
         validator.setValidators(listOf(ParameterValidator(), defaultJobParametersValidator))
 
         return validator
+    }
+
+    @BeforeJob
+    fun loggerListener() {
+        println("@BeforeJob 어노테이션으로 실행시켜보긔")
     }
 }
 
