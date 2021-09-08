@@ -36,12 +36,12 @@ class HelloWorldJob(
         return this.jobBuilderFactory.get("basicJob")
             .start(step1())
             .validator(validator())
-            .incrementer(RunIdIncrementer()) // 얘는 기본 증가값. validator에 run.id를 추가해줘야된다. 근데 증분기를 위 아래 두 개나 해주니 얘는 run.id가 현재 값으로 고정된다. 아마 아래에 있는 것만 실행시키는듯?
             .incrementer(DailyJobTimeStamper()) // 얘 덕분에 잡 파라미터가 매번 바뀌어서 매번 잡 인스턴스를 만들기 때문에 편하게 실행시킬 수 있다.
+            .incrementer(RunIdIncrementer()) // 얘는 기본 증가값. validator에 run.id를 추가해줘야된다. 근데 증분기를 위 아래 두 개나 해주니 얘는 run.id가 현재 값으로 고정된다. 아마 아래에 있는 것만 실행시키는듯? (아래 순서로 set이 된다. 순서 상관이 있다)
             .next(step2())
             .next(step3())
+            .listener(JobListenerFactoryBean.getListener(loggerListener())) // 어노테이션용 Listener 근데 더 위 친구보다 더 빨리 실행된다. (순서 상관없이 얘가 먼저 출력됨)
             .listener(JobLoggerListener()) // 특정 시점에 로직을 실행시킬 수 있음
-            .listener(JobListenerFactoryBean.getListener(loggerListener())) // 어노테이션용 Listener 근데 더 위 친구보다 더 빨리 실행된다. (얘가 먼저 출력됨)
             .next(step4())
             .build()
     }
