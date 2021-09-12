@@ -1,4 +1,4 @@
-package com.bingbong.defguidespringbatch.chunk
+package com.bingbong.defguidespringbatch.jobs
 
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -17,10 +17,6 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import java.util.*
 
-/**
- * 잘 될 것 같은데 이상하게 잘 안된다.
- * 나중에 삽질해보자.
- */
 @EnableBatchProcessing
 @SpringBootApplication
 class ChunkJob(
