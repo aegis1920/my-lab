@@ -49,7 +49,7 @@ class ExploringJob(
 }
 
 class ExploringTasklet(
-    private var explorer: JobExplorer,
+    private val explorer: JobExplorer,
 ) : Tasklet {
     override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus? {
         val jobName = chunkContext.stepContext.jobName
