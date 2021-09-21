@@ -4,6 +4,7 @@ import org.springframework.batch.core.*
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
+import org.springframework.batch.core.explore.JobExplorer
 import org.springframework.batch.core.launch.JobLauncher
 import org.springframework.batch.core.launch.support.RunIdIncrementer
 import org.springframework.batch.repeat.RepeatStatus
@@ -37,7 +38,7 @@ class RestJobApplication(
     fun restStep(): Step {
         return this.stepBuilderFactory.get("restStep")
             .tasklet { _, _ ->
-                println("현재 이 Job 또한 실행되지 않음!!!")
+                println("REST API로 Batch 실행시키기")
                 RepeatStatus.FINISHED
             }
             .build()
@@ -47,15 +48,20 @@ class RestJobApplication(
 @RestController
 class JobLauncherController(
     @Autowired private val jobLauncher: JobLauncher,
-    @Autowired private val context: ApplicationContext
+    @Autowired private val context: ApplicationContext,
+    @Autowired private val jobExplorer: JobExplorer,
 ) {
     @PostMapping("/run")
     fun runJob(@RequestBody request: JobLaunchRequest): ExitStatus {
         val job: Job = this.context
             .getBean(request.name, Job::class.java)
 
+        val jobParameters = JobParametersBuilder(request.getJobParameters(), this.jobExplorer)
+            .getNextJobParameters(job) // 파라미터를 증가를 활성화시켜준다. 해당 Job이 JobParametersIncrementer를 가지고 있는지 판별한다. 이걸 가지고 있다면 마지막 JobExecution에 사용됐던 JobParameters에 적용한다.
+            .toJobParameters()
+
         return this.jobLauncher
-            .run(job, request.getJobParameters())
+            .run(job, jobParameters)
             .exitStatus
     }
 }
