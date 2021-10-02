@@ -1,6 +1,7 @@
 package com.bingbong.defguidespringbatch.jpa.paging;
 
 import com.bingbong.defguidespringbatch.jpa.paging.domain.Customer;
+import com.bingbong.defguidespringbatch.jpa.paging.provider.CustomerByCityQueryProvider;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -51,10 +52,12 @@ public class JpaPagingApplication {
 	@Bean
 	@StepScope
 	public JpaPagingItemReader<Customer> customerJpaPagingItemReader(EntityManagerFactory entityManagerFactory, @Value("#{jobParameters['city']}") String city) {
+		CustomerByCityQueryProvider queryProvider = new CustomerByCityQueryProvider();
+		
 		return new JpaPagingItemReaderBuilder<Customer>()
 				.name("customerJpaPagingItemReader")
 				.entityManagerFactory(entityManagerFactory)
-				.queryString("select c from Customer c where c.city = :city") // table명이 아니라 Entity명으로 써줘야됨 (대소문자 구별)
+				.queryProvider(queryProvider)
 				.parameterValues(Collections.singletonMap("city", city))
 				.build();
 	}
@@ -65,6 +68,6 @@ public class JpaPagingApplication {
 	}
 	
 	public static void main(String[] args) {
-		SpringApplication.run(JpaPagingApplication.class, "--job.name=customerJpaPagingJob", "city=Norman");
+		SpringApplication.run(JpaPagingApplication.class, "--job.name=customerJpaPagingJob", "city=Davenport");
 	}
 }
