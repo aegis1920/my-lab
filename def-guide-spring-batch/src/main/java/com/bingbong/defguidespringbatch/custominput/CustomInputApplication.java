@@ -1,7 +1,7 @@
 package com.bingbong.defguidespringbatch.custominput;
 
+import com.bingbong.defguidespringbatch.custominput.customreader.CustomerItemReader;
 import com.bingbong.defguidespringbatch.custominput.domain.Customer;
-import com.bingbong.defguidespringbatch.custominput.service.CustomerItemReader;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.DefaultBatchConfigurer;

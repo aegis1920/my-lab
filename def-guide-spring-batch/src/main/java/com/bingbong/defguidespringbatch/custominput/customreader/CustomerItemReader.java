@@ -1,4 +1,4 @@
-package com.bingbong.defguidespringbatch.custominput.service;
+package com.bingbong.defguidespringbatch.custominput.customreader;
 
 import com.bingbong.defguidespringbatch.custominput.domain.Customer;
 import org.springframework.batch.item.ExecutionContext;
