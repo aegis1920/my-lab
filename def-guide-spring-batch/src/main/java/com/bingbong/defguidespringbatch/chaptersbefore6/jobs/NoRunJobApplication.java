@@ -46,7 +46,7 @@ public class NoRunJobApplication {
 		// 모든 Job이 실행되지 않음
 		properties.put("spring.batch.job.enabled", false);
 		application.setDefaultProperties(properties);
-		SpringApplication.run(HelloWorldJob.class, args);
+		SpringApplication.run(NoRunJobApplication.class, args);
 	}
 }
 

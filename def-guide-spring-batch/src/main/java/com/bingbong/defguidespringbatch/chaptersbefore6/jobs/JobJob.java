@@ -109,6 +109,6 @@ public class JobJob {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(HelloWorldJob.class, args);
+		SpringApplication.run(JobJob.class, args);
 	}
 }
