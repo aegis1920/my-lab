@@ -8,7 +8,10 @@ import com.bingbong.defguidespringbatch.chapter6.transactionjob.processor.Transa
 import com.bingbong.defguidespringbatch.chapter6.transactionjob.reader.TransactionReader;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.*;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
@@ -27,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 
@@ -37,17 +39,14 @@ import java.util.Arrays;
 import java.util.List;
 
 @EnableBatchProcessing
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
-public class TransactionProcessingJob extends DefaultBatchConfigurer {
+@SpringBootApplication
+public class TransactionProcessingJob {
 	
 	@Autowired
 	private JobBuilderFactory jobBuilderFactory;
 	
 	@Autowired
 	private StepBuilderFactory stepBuilderFactory;
-	
-	@Override
-	public void setDataSource(DataSource dataSource) {}
 	
 	@Bean
 	@StepScope
@@ -169,6 +168,8 @@ public class TransactionProcessingJob extends DefaultBatchConfigurer {
 	@Bean
 	public Step generateAccountSummaryStep() {
 		return this.stepBuilderFactory.get("generateAccountSummaryStep")
+//				.startLimit(2) // preventRestart() 처럼 얼마나 시작할 건지를 Step으로 해줄 수 있다
+//				.allowStartIfComplete(true) // 이 Step이 Completed로 됐다고 하더라도 또 실행한다
 				.<AccountSummary, AccountSummary>chunk(100)
 				.reader(accountSummaryReader(null))
 				.writer(accountSummaryFileWriter(null))
@@ -178,14 +179,14 @@ public class TransactionProcessingJob extends DefaultBatchConfigurer {
 	@Bean
 	public Job transactionJob() {
 		return this.jobBuilderFactory.get("transactionJob")
-				.preventRestart()
+//				.preventRestart() // 이전에 실행한 Job이 실행됐든 안 됐든 다시 실행이 불가능하다. JobInstance already exists and is not restartable 라고 뜬다.
 				.start(importTransactionFileStep())
 				.next(applyTransactionsStep())
 				.next(generateAccountSummaryStep())
 				.build();
 //		return this.jobBuilderFactory.get("transactionJob")
 //				.start(importTransactionFileStep())
-//				.on("STOPPED").stopAndRestart(importTransactionFileStep())
+//				.on("STOPPED").stopAndRestart(importTransactionFileStep()) // STOPPED 라면 importTransactionFileStep로 다시 실행하도록
 //				.from(importTransactionFileStep()).on("*").to(applyTransactionsStep())
 //				.from(applyTransactionsStep()).next(generateAccountSummaryStep())
 //				.end()
