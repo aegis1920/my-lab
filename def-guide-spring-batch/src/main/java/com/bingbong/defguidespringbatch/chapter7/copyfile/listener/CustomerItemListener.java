@@ -1,6 +1,6 @@
-package com.bingbong.defguidespringbatch.chapter7.error.listener;
+package com.bingbong.defguidespringbatch.chapter7.copyfile.listener;
 
-import com.bingbong.defguidespringbatch.chapter7.error.domain.Customer;
+import com.bingbong.defguidespringbatch.chapter7.copyfile.domain.Customer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.ItemReadListener;
@@ -14,6 +14,7 @@ public class CustomerItemListener implements ItemReadListener<Customer> {
 	
 	@Override
 	public void beforeRead() {
+		System.out.println("읽었어여!");
 	}
 	
 	@Override

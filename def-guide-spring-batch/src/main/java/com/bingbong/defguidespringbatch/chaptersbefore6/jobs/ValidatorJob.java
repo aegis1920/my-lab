@@ -66,13 +66,13 @@ public class ValidatorJob {
 	@Bean
 	public Step step1() {
 		return this.stepBuilderFactory.get("step1")
-				.tasklet(helloWorldTasklet(null, null))
+				.tasklet(validatorTasklet(null, null))
 				.build();
 	}
 
 	@StepScope
 	@Bean
-	public Tasklet helloWorldTasklet(
+	public Tasklet validatorTasklet(
 			@Value("#{jobParameters['name']}") String name,
 			@Value("#{jobParameters['fileName']}") String fileName) {
 
