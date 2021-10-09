@@ -1,15 +1,14 @@
-package com.bingbong.defguidespringbatch.chapter8.copyfile;
+package com.bingbong.defguidespringbatch.chapter8.adapter;
 
-import com.bingbong.defguidespringbatch.chapter8.copyfile.domain.Customer;
-import com.bingbong.defguidespringbatch.chapter8.copyfile.validator.UniqueLastNameValidator;
+import com.bingbong.defguidespringbatch.chapter8.adapter.domain.Customer;
+import com.bingbong.defguidespringbatch.chapter8.adapter.service.UpperCaseNameService;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.*;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.adapter.ItemProcessorAdapter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
-import org.springframework.batch.item.validator.BeanValidatingItemProcessor;
-import org.springframework.batch.item.validator.ValidatingItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,45 +21,39 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * chpater8_customer.csv 파일에서 LastName이 동일하면 실패하기 때문에 6번째, 13번째 줄에 Darrow로 동일해서 예외가 발생한다.
- * 그래서 해당 Job을 통과시키려면 6번째, 13번째 줄을 삭제해야 한다.
- */
 @EnableBatchProcessing
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
-public class ValidationProcessJobApplication extends DefaultBatchConfigurer {
+public class AdapterProcessJobApplication extends DefaultBatchConfigurer {
 	private final JobBuilderFactory jobBuilderFactory;
 	private final StepBuilderFactory stepBuilderFactory;
-	
-	public ValidationProcessJobApplication(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
+
+	public AdapterProcessJobApplication(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
 		this.jobBuilderFactory = jobBuilderFactory;
 		this.stepBuilderFactory = stepBuilderFactory;
 	}
-	
+
 	@Override
 	public void setDataSource(DataSource dataSource) {
 	}
-	
+
 	@Bean
-	public Job validationProcessJob() {
+	public Job AdapterProcessJob() {
 		return this.jobBuilderFactory
-				.get("validationProcessJob")
-				.start(validationProcessStep())
+				.get("AdapterProcessJob")
+				.start(AdapterProcessStep())
 				.build();
 	}
-	
+
 	@Bean
-	public Step validationProcessStep() {
-		return this.stepBuilderFactory.get("validationProcessStep")
+	public Step AdapterProcessStep() {
+		return this.stepBuilderFactory.get("AdapterProcessStep")
 				.<Customer, Customer>chunk(5)
 				.reader(customerFlatFileItemReader(null))
-//				.processor(customerBeanValidatingItemProcessor())
-				.processor(customerValidatingItemProcessor())
+				.processor(itemProcessor(null))
 				.writer(itemWriter())
-				.stream(validator())
 				.build();
 	}
-	
+
 	// delimiter로 이뤄진 파일을 읽음. 기본값은 콤마. 즉, csv로 읽음
 	@Bean
 	@StepScope
@@ -73,39 +66,28 @@ public class ValidationProcessJobApplication extends DefaultBatchConfigurer {
 				.resource(inputFile)
 				.build();
 	}
-	
+
 	@Bean
 	public ItemWriter<Customer> itemWriter() {
 		return items -> items.forEach(System.out::println);
 	}
-	
-	/**
-	 * {@link BeanValidatingItemProcessor}은 {@link ValidatingItemProcessor}을 상속한 녀석
-	 */
-//	@Bean
-//	public BeanValidatingItemProcessor<Customer> customerBeanValidatingItemProcessor() {
-//		return new BeanValidatingItemProcessor<>();
-//	}
-	
+
 	@Bean
-	public UniqueLastNameValidator validator() {
-		UniqueLastNameValidator uniqueLastNameValidator = new UniqueLastNameValidator();
-		uniqueLastNameValidator.setName("validator");
-		
-		return uniqueLastNameValidator;
+	public ItemProcessorAdapter<Customer, Customer> itemProcessor(UpperCaseNameService service) {
+		ItemProcessorAdapter<Customer, Customer> adapter = new ItemProcessorAdapter<>();
+
+		adapter.setTargetObject(service);
+		adapter.setTargetMethod("upperCase");
+
+		return adapter;
 	}
-	
-	@Bean
-	public ValidatingItemProcessor<Customer> customerValidatingItemProcessor() {
-		return new ValidatingItemProcessor<>(validator());
-	}
-	
+
 	public static void main(String[] args) {
 		List<String> realArgs = new ArrayList<>(Arrays.asList(args));
-		
-		realArgs.add("--job.name=validationProcessJob");
+
+		realArgs.add("--job.name=AdapterProcessJob");
 		realArgs.add("customerFile=input/chpater8_customer.csv");
-		
-		SpringApplication.run(ValidationProcessJobApplication.class, realArgs.toArray(new String[realArgs.size()]));
+
+		SpringApplication.run(AdapterProcessJobApplication.class, realArgs.toArray(new String[realArgs.size()]));
 	}
 }
