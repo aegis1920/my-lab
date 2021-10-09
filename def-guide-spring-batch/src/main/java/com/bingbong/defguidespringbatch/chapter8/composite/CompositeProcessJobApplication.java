@@ -1,5 +1,6 @@
 package com.bingbong.defguidespringbatch.chapter8.composite;
 
+import com.bingbong.defguidespringbatch.chapter8.composite.classifier.ZipCodeClassifier;
 import com.bingbong.defguidespringbatch.chapter8.composite.domain.Customer;
 import com.bingbong.defguidespringbatch.chapter8.composite.service.LowerCaseNameService;
 import com.bingbong.defguidespringbatch.chapter8.composite.service.UpperCaseNameService;
@@ -11,12 +12,14 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.adapter.ItemProcessorAdapter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.support.ClassifierCompositeItemProcessor;
 import org.springframework.batch.item.support.CompositeItemProcessor;
 import org.springframework.batch.item.validator.ValidatingItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.classify.Classifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 
@@ -57,7 +60,8 @@ public class CompositeProcessJobApplication extends DefaultBatchConfigurer {
 		return this.stepBuilderFactory.get("CompositeProcessStep")
 				.<Customer, Customer>chunk(5)
 				.reader(customerFlatFileItemReader(null))
-				.processor(itemProcessor())
+//				.processor(itemProcessor()) // Composite
+				.processor(classifierItemProcessor()) // classifier로 분류
 				.writer(itemWriter())
 				.build();
 	}
@@ -129,6 +133,20 @@ public class CompositeProcessJobApplication extends DefaultBatchConfigurer {
 		// 유효성 검증을 필터로 바꾼다. 
 		itemProcessor.setFilter(true);
 		
+		return itemProcessor;
+	}
+
+	@Bean
+	public Classifier classifier() {
+		return new ZipCodeClassifier(upperCaseItemProcessor(null), lowerCaseItemProcessor(null));
+	}
+
+	@Bean
+	public ClassifierCompositeItemProcessor<Customer, Customer> classifierItemProcessor() {
+		ClassifierCompositeItemProcessor<Customer, Customer> itemProcessor = new ClassifierCompositeItemProcessor<>();
+
+		itemProcessor.setClassifier(classifier());
+
 		return itemProcessor;
 	}
 	
