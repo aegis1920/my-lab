@@ -1,6 +1,7 @@
 package com.bingbong.defguidespringbatch.chapter8.copyfile;
 
 import com.bingbong.defguidespringbatch.chapter8.copyfile.domain.Customer;
+import com.bingbong.defguidespringbatch.chapter8.copyfile.validator.UniqueLastNameValidator;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.*;
@@ -21,6 +22,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * chpater8_customer.csv 파일에서 LastName이 동일하면 실패하기 때문에 6번째, 13번째 줄에 Darrow로 동일해서 예외가 발생한다.
+ * 그래서 해당 Job을 통과시키려면 6번째, 13번째 줄을 삭제해야 한다.
+ */
 @EnableBatchProcessing
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 public class ValidationProcessJobApplication extends DefaultBatchConfigurer {
@@ -49,8 +54,10 @@ public class ValidationProcessJobApplication extends DefaultBatchConfigurer {
 		return this.stepBuilderFactory.get("validationProcessStep")
 				.<Customer, Customer>chunk(5)
 				.reader(customerFlatFileItemReader(null))
-				.processor(customerBeanValidatingItemProcessor())
+//				.processor(customerBeanValidatingItemProcessor())
+				.processor(customerValidatingItemProcessor())
 				.writer(itemWriter())
+				.stream(validator())
 				.build();
 	}
 	
@@ -76,9 +83,22 @@ public class ValidationProcessJobApplication extends DefaultBatchConfigurer {
 	/**
 	 * {@link BeanValidatingItemProcessor}은 {@link ValidatingItemProcessor}을 상속한 녀석
 	 */
+//	@Bean
+//	public BeanValidatingItemProcessor<Customer> customerBeanValidatingItemProcessor() {
+//		return new BeanValidatingItemProcessor<>();
+//	}
+	
 	@Bean
-	public BeanValidatingItemProcessor<Customer> customerBeanValidatingItemProcessor() {
-		return new BeanValidatingItemProcessor<>();
+	public UniqueLastNameValidator validator() {
+		UniqueLastNameValidator uniqueLastNameValidator = new UniqueLastNameValidator();
+		uniqueLastNameValidator.setName("validator");
+		
+		return uniqueLastNameValidator;
+	}
+	
+	@Bean
+	public ValidatingItemProcessor<Customer> customerValidatingItemProcessor() {
+		return new ValidatingItemProcessor<>(validator());
 	}
 	
 	public static void main(String[] args) {
