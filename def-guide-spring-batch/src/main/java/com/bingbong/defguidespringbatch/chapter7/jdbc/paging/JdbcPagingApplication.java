@@ -55,9 +55,11 @@ public class JdbcPagingApplication {
 		Map<String, Object> parameterValues = new HashMap<>(1);
 		parameterValues.put("city", city);
 		
+		// DataSource Param에 null이 들어가면 자동적으로 HikariDataSource가 들어온다. 어떻게 이게 들어올 수 있나?
+		
 		return new JdbcPagingItemReaderBuilder<Customer>()
 				.name("customerJdbcPagingItemReader")
-				.dataSource(dataSource)
+				.dataSource(dataSource) // 여기에 null을 직접 쓰면 에러가 난다 왜?
 				.queryProvider(queryProvider)
 				.parameterValues(parameterValues)
 				.pageSize(10)

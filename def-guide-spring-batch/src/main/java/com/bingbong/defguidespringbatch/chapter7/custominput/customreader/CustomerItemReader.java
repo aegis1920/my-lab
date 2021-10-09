@@ -85,6 +85,7 @@ public class CustomerItemReader extends ItemStreamSupport implements ItemReader<
 		if (executionContext.containsKey(getExecutionContextKey(INDEX_KEY))) {
 			int index = executionContext.getInt(getExecutionContextKey(INDEX_KEY));
 			
+			// 50번째라면 51번으로 넘어감
 			if (index == 50) {
 				curIndex = 51;
 			} else {
