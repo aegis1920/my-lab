@@ -1,8 +1,9 @@
-package com.bingbong.defguidespringbatch.chaptersbefore6.my.helloworld;
+package com.bingbong.defguidespringbatch.my;
 
-import com.bingbong.defguidespringbatch.chaptersbefore6.my.helloworld.customreader.CustomerItemReader;
-import com.bingbong.defguidespringbatch.chaptersbefore6.my.helloworld.domain.Customer;
-import com.bingbong.defguidespringbatch.chaptersbefore6.my.helloworld.listener.CustomerItemListener;
+import com.bingbong.defguidespringbatch.my.customreader.CustomerItemReader;
+import com.bingbong.defguidespringbatch.my.domain.Customer;
+import com.bingbong.defguidespringbatch.my.listener.CustomerChunkListener;
+import com.bingbong.defguidespringbatch.my.listener.CustomerItemListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.*;
@@ -51,6 +52,7 @@ public class HelloWorldJobApplication extends DefaultBatchConfigurer {
 				.reader(customerHelloWorldItemReader())
 				.writer(customerHelloWorldItemWriter())
 				.listener(new CustomerItemListener())
+				.listener(new CustomerChunkListener())
 				.build();
 	}
 	

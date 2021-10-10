@@ -1,6 +1,6 @@
-package com.bingbong.defguidespringbatch.chaptersbefore6.my.helloworld.customreader;
+package com.bingbong.defguidespringbatch.my.customreader;
 
-import com.bingbong.defguidespringbatch.chaptersbefore6.my.helloworld.domain.Customer;
+import com.bingbong.defguidespringbatch.my.domain.Customer;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStreamException;

@@ -1,4 +1,4 @@
-package com.bingbong.defguidespringbatch.chaptersbefore6.my.helloworld.domain;
+package com.bingbong.defguidespringbatch.my.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

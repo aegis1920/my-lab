@@ -63,14 +63,13 @@ public class CopyFileJobApplication extends DefaultBatchConfigurer {
 	@Bean
 	@StepScope
 	public FlatFileItemReader<Customer> customerFlatFileItemReader(@Value("#{jobParameters['customerFile']}") Resource inputFile) {
-		FlatFileItemReader<Customer> build = new FlatFileItemReaderBuilder<Customer>()
+		return new FlatFileItemReaderBuilder<Customer>()
 				.name("customerFlatFileItemReader")
 				.delimited()
 				.names("firstName", "middleInitial", "lastName", "addressNumber", "street", "city", "state", "zipCode")
 				.targetType(Customer.class)
 				.resource(inputFile)
 				.build();
-		return build;
 	}
 	
 	// json 파일을 읽음
