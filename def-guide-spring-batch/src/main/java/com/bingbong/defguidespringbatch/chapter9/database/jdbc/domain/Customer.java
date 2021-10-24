@@ -1,6 +1,7 @@
-package com.bingbong.defguidespringbatch.chapter9.flatfile.domain;
+package com.bingbong.defguidespringbatch.chapter9.database.jdbc.domain;
 
 public class Customer {
+	private Long id;
 	private String firstName;
 	private String middleInitial;
 	private String lastName;
@@ -12,7 +13,8 @@ public class Customer {
 	public Customer() {
 	}
 	
-	public Customer(String firstName, String middleInitial, String lastName, String address, String city, String state, String zip) {
+	public Customer(Long id, String firstName, String middleInitial, String lastName, String address, String city, String state, String zip) {
+		this.id = id;
 		this.firstName = firstName;
 		this.middleInitial = middleInitial;
 		this.lastName = lastName;
@@ -20,6 +22,14 @@ public class Customer {
 		this.city = city;
 		this.state = state;
 		this.zip = zip;
+	}
+	
+	public Long getId() {
+		return id;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 	public String getFirstName() {
@@ -81,7 +91,8 @@ public class Customer {
 	@Override
 	public String toString() {
 		return "Customer{" +
-				"firstName='" + firstName + '\'' +
+				"id=" + id +
+				", firstName='" + firstName + '\'' +
 				", middleInitial='" + middleInitial + '\'' +
 				", lastName='" + lastName + '\'' +
 				", address='" + address + '\'' +

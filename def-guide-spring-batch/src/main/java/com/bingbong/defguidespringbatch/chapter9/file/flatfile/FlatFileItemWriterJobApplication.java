@@ -1,6 +1,6 @@
-package com.bingbong.defguidespringbatch.chapter9.flatfile;
+package com.bingbong.defguidespringbatch.chapter9.file.flatfile;
 
-import com.bingbong.defguidespringbatch.chapter9.flatfile.domain.Customer;
+import com.bingbong.defguidespringbatch.chapter9.file.flatfile.domain.Customer;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.*;
@@ -47,7 +47,7 @@ public class FlatFileItemWriterJobApplication extends DefaultBatchConfigurer {
 	public Step flatFileStep() {
 		return this.stepBuilderFactory.get("flatFileStep")
 				.<Customer, Customer>chunk(2)
-				.reader(customerFlatFileItemReader2(null))
+				.reader(customerFlatFileItemReader(null))
 				.writer(customerItemWriter(null))
 				.build();
 	}
@@ -55,9 +55,9 @@ public class FlatFileItemWriterJobApplication extends DefaultBatchConfigurer {
 	// DefaultLineMapper를 생성하고 DefaultLineMapper는 DelimitedLineTokenizer를 사용해 라인을 파싱하고 BeanWrapperFieldSetMapper를 사용해 도메인 객체에 값을 채워넣는다.
 	@Bean
 	@StepScope
-	public FlatFileItemReader<Customer> customerFlatFileItemReader2(@Value("#{jobParameters['customerFile']}") Resource inputFile) {
+	public FlatFileItemReader<Customer> customerFlatFileItemReader(@Value("#{jobParameters['customerFile']}") Resource inputFile) {
 		return new FlatFileItemReaderBuilder<Customer>()
-				.name("customerFlatFileItemReader2")
+				.name("customerFlatFileItemReader")
 				.resource(inputFile)
 				.delimited()
 				.names("firstName", "middleInitial", "lastName", "address", "city", "state", "zip")
