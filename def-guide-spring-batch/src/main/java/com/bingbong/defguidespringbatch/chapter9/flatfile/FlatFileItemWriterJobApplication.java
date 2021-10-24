@@ -72,9 +72,22 @@ public class FlatFileItemWriterJobApplication extends DefaultBatchConfigurer {
 		return new FlatFileItemWriterBuilder<Customer>()
 				.name("customerItemWriter")
 				.resource(outputFile)
-				.formatted()
-				.format("%s %s lives at %s %s in %s, %s")
+				// format 형태로 출력하고 싶다면 이렇게
+//				.formatted()
+//				.format("%s %s lives at %s %s in %s, %s")
+				// 구분자 형태로 출력하고 싶다면 이렇게
+				.delimited()
+				.delimiter(";")
 				.names("firstName", "middleInitial", "lastName", "address", "city", "state", "zip")
+				// 스텝이 완료됐음에도 불구하고 아무 아이템도 기록되지 않는 경우, 출력 파일 삭제함
+				// 예를 들어, chapter9_customer.csv 파일을 빈 상태로 뒀을 때 파일이 삭제됨
+				// 다만 이때도 출력 파일이 생성되고 open, close 되긴 함
+//				.shouldDeleteIfEmpty(true)
+				// 파일이 이미 존재한다면 삭제하고 다시 생성한다.(기본값 true) false로 두면 파일이 이미 존재할 때 해당 job은 error가 뜬다.
+				// 그래서 결과를 보호하기 위한 차원이라면 이 옵션을 false로 두는 게 좋다.
+				.shouldDeleteIfExists(true)
+				// 기존 값에 결과를 더할지 말지를 선택하게 한다.
+//				.append(true)
 				.build();
 	}
 	
