@@ -1,10 +1,12 @@
 package com.bingbong.core.discount;
 
+import com.bingbong.core.annotation.MainDiscountPolicy;
 import com.bingbong.core.member.Grade;
 import com.bingbong.core.member.Member;
 import org.springframework.stereotype.Component;
 
 @Component
+@MainDiscountPolicy
 public class RateDiscountPolicy implements DiscountPolicy {
 	
 	private int discountPercent = 10;

@@ -2,7 +2,9 @@ package com.bingbong.core.discount;
 
 import com.bingbong.core.member.Grade;
 import com.bingbong.core.member.Member;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FixDiscountPolicy implements DiscountPolicy {
 	
 	private int discountFixAmount = 1000;
