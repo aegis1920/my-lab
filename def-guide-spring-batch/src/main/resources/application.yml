@@ -9,9 +9,6 @@ spring:
       initialize-schema: always
     job:
       names: ${job.name:NONE}
-  sql:
-    init:
-      platform: mysql
   jpa:
     hibernate:
       naming:

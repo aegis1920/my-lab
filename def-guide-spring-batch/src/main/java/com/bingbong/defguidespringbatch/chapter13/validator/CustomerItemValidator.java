@@ -11,7 +11,7 @@ public class CustomerItemValidator implements Validator<CustomerUpdate> {
 	
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 	
-	public static final String FIND_CUSTOMER = "SELECT COUNT(*) FROM CUSTOMER WHERE customer_id = :id";
+	public static final String FIND_CUSTOMER = "SELECT COUNT(*) FROM customer WHERE id = :id";
 	
 	public CustomerItemValidator(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
@@ -19,12 +19,12 @@ public class CustomerItemValidator implements Validator<CustomerUpdate> {
 	
 	@Override
 	public void validate(CustomerUpdate customer) throws ValidationException {
-		Map<String, Long> paratemerMap = Collections.singletonMap("id", customer.getCustomerId());
+		Map<String, Long> paratemerMap = Collections.singletonMap("id", customer.getId());
 		
 		Long count = jdbcTemplate.queryForObject(FIND_CUSTOMER, paratemerMap, Long.class);
 		
 		if (count == 0) {
-			throw new ValidationException(String.format("Customer id %s 를 찾을 수 없습니다.", customer.getCustomerId()));
+			throw new ValidationException(String.format("Customer id %s 를 찾을 수 없습니다.", customer.getId()));
 		}
 	}
 }
