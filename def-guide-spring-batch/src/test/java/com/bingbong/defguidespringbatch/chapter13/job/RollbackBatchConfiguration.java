@@ -43,11 +43,22 @@ public class RollbackBatchConfiguration {
 		return new ListItemReader<>(numbers);
 	}
 	
+	/**
+	 * 3 -> null
+	 * 9 -> Skip 가능한 Exception throw
+	 * 13 -> Exception throw
+	 */
 	@Bean
 	public ItemProcessor<String, String> itemProcessor() {
 		return item -> {
-			if (item.equals("9")) {
-				throw new RuntimeException("에러가 터졌어요!!");
+			if ("3".equals(item)) {
+				return null; // filterCount에 나온다.
+			}
+			if ("9".equals(item)) {
+				throw new IllegalArgumentException("파라미터 에러가 터졌어요!!");
+			}
+			if ("13".equals(item)) {
+				throw new RuntimeException("런타임 에러가 터졌어요!!");
 			}
 			log.info("{} Process 진행중입니다...", item);
 			return item + " Processed ";
@@ -56,7 +67,10 @@ public class RollbackBatchConfiguration {
 	
 	@Bean
 	public ItemWriter<String> itemWriter() {
-		return list -> list.forEach(System.out::print);
+		return list -> {
+			list.forEach(System.out::print);
+			System.out.println();
+		};
 	}
 	
 	@Bean
@@ -66,6 +80,9 @@ public class RollbackBatchConfiguration {
 				.reader(itemReader())
 				.processor(itemProcessor())
 				.writer(itemWriter())
+				.faultTolerant()
+				.skip(IllegalArgumentException.class)
+				.skipLimit(1)
 				.listener(new CustomItemReadListener())
 				.listener(new CustomItemProcessListener())
 				.listener(new CustomItemWriterListener())
