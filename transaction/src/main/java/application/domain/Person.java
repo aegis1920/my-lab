@@ -23,9 +23,13 @@ public class Person {
 
     private String name;
 
-    private Long age;
+    private Integer age;
+    
+    public Person(String name) {
+        new Person(name, 20);
+    }
 
-    public Person(String name, Long age) {
+    public Person(String name, Integer age) {
         this.name = name;
         this.age = age;
     }

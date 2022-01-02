@@ -29,8 +29,8 @@ public class TransactionLockTest {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        entityManager.persist(new PersonWithVersion("bingbong", 3L));
-        entityManager.persist(new Person("bingbong", 3L));
+        entityManager.persist(new PersonWithVersion("bingbong", 3));
+        entityManager.persist(new Person("bingbong", 3));
 
         entityManager.getTransaction().commit();
         entityManager.close();
@@ -45,8 +45,8 @@ public class TransactionLockTest {
         entityManager2.getTransaction().begin();
 
         // 동시에 조회했으므로 이때 버전은 둘다 0
-        PersonWithVersion Person = entityManager.find(PersonWithVersion.class, 1L);
-        PersonWithVersion member2 = entityManager2.find(PersonWithVersion.class, 1L);
+        PersonWithVersion Person = entityManager.find(PersonWithVersion.class, 1);
+        PersonWithVersion member2 = entityManager2.find(PersonWithVersion.class, 1);
 
         /*
         update
@@ -99,7 +99,7 @@ public class TransactionLockTest {
 
         // 위처럼 for update를 붙여서 가져오기 때문에 Lock이 걸린다.
         entityManager.find(Person.class, 1L, LockModeType.PESSIMISTIC_WRITE);
-        Person member2 = entityManager2.find(Person.class, 1L);
+        Person member2 = entityManager2.find(Person.class, 1);
 
         // 이렇게 조회하는 건 상관없지만
         assertThat(member2.getName()).isEqualTo("bingbong");

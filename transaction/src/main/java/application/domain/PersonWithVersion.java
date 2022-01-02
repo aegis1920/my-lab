@@ -24,12 +24,12 @@ public class PersonWithVersion {
 
     private String name;
 
-    private Long age;
+    private Integer age;
 
     @Version
     private Integer version;
 
-    public PersonWithVersion(String name, Long age) {
+    public PersonWithVersion(String name, Integer age) {
         this.name = name;
         this.age = age;
     }
