@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bingbong.timezonediff.repository.TimezoneDiffRepository">
+
+    <select id="selectAll" resultType="com.bingbong.timezonediff.repository.PersonDto">
+        select name, create_dtime as createDtime, create_zdtime as createZDtime, create_ts as createTs
+        from person;
+    </select>
+    <select id="select" resultType="com.bingbong.timezonediff.repository.PersonDto">
+        select * from person where id = #{id}
+    </select>
+    <insert id="create">
+        insert into person (name, create_dtime, create_zdtime, create_ts) values (#{name}, #{createDtime}, #{createZDtime}, #{createTs})
+    </insert>
+    <insert id="createDbNow">
+        insert into person (name, create_dtime, create_zdtime, create_ts) values (#{name}, NOW(), NOW(), NOW())
+    </insert>
+    <update id="update">
+        update person set (#{name}, #{createDtime}, #{updateDtime}, #{createTs}) where id = #{id}
+    </update>
+    <delete id="delete">
+        delete from person where id = #{id}
+    </delete>
+
+
+</mapper>
